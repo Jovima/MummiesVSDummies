@@ -18,19 +18,27 @@ public class HumansController : MonoBehaviour {
   void Update () {
     if (Input.touchCount == 1 && Input.GetTouch(0).phase.Equals(TouchPhase.Ended)) {
       if (Vector2.SqrMagnitude(Input.GetTouch(0).deltaPosition) < 0.5f) {
-        RaycastHit hit;
-        Ray ray = mainCamera.ScreenPointToRay(Input.GetTouch(0).position);
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask)) {
-          foreach (Human human in humans) {
-            if(human && human.enabled) human.GoToDestination(hit.point);
-          }
-          touchFeedback.transform.position = hit.point;
-          touchFeedback.Play();
-        }
+        CheckGround(Input.GetTouch(0).position);
       }
     }
 
+    if (Input.GetMouseButtonDown(0)) {
+      CheckGround(Input.mousePosition);
+    }
+
+  }
+
+  public void CheckGround(Vector3 position) {
+    RaycastHit hit;
+    Ray ray = mainCamera.ScreenPointToRay(position);
+
+    if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask)) {
+      foreach (Human human in humans) {
+        if (human && human.enabled) human.GoToDestination(hit.point);
+      }
+      touchFeedback.transform.position = hit.point;
+      touchFeedback.Play();
+    }
   }
 
 }

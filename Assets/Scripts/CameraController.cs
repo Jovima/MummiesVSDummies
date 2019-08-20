@@ -15,6 +15,9 @@ public class CameraController : MonoBehaviour {
   private Vector3 startPosition, startRotation;
   private Sequence patrolAnim;
 
+  private Vector3 delta;
+  private Vector3 lastPos;
+
   private void Awake () {
     cam = GetComponent<Camera>();
   }
@@ -30,12 +33,25 @@ public class CameraController : MonoBehaviour {
     if (!enableTouch) return;
 
     if (!isAnimationPlaying && Input.touchCount == 1 && Input.GetTouch(0).phase.Equals(TouchPhase.Moved)) {
-      Vector2 deltaPosition = Input.GetTouch(0).deltaPosition;
-      deltaPosition = new Vector2(deltaPosition.x / screenSize.x, deltaPosition.y / screenSize.y) * cameraSpeedFactor;
-      Vector3 deltaPosFixed = new Vector3(deltaPosition.x, 0, deltaPosition.y);
-      deltaPosFixed = Quaternion.Euler(0, yRotation, 0) * deltaPosFixed;
-      transform.position -= deltaPosFixed;
+      moveHumans(Input.GetTouch(0).deltaPosition);
     }
+
+    if (Input.GetMouseButtonDown(1)) {
+      lastPos = Input.mousePosition;
+    } else if (Input.GetMouseButton(1)) {
+      delta = Input.mousePosition - lastPos;
+
+      moveHumans(delta);
+
+      lastPos = Input.mousePosition;
+    }
+  }
+
+  private void moveHumans (Vector2 deltaPosition) {
+    deltaPosition = new Vector2(deltaPosition.x / screenSize.x, deltaPosition.y / screenSize.y) * cameraSpeedFactor;
+    Vector3 deltaPosFixed = new Vector3(deltaPosition.x, 0, deltaPosition.y);
+    deltaPosFixed = Quaternion.Euler(0, yRotation, 0) * deltaPosFixed;
+    transform.position -= deltaPosFixed;
   }
 
   // Camera animation in first menu
